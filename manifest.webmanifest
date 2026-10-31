@@ -1,0 +1,25 @@
+{
+  "name": "Taal & Maatschappij Trainer",
+  "short_name": "Taaltrainer",
+  "description": "Oefen begrippen en definities voor Taal & Maatschappij, inclusief RTTI.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#102a43",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

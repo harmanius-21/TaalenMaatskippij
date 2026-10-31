@@ -1,6 +1,10 @@
 <!doctype html>
 <html lang="nl">
 <head>
+  <meta name="theme-color" content="#102a43">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png" type="image/png">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#122b45">
 <title>Taal & Maatschappij Trainer</title>
@@ -161,4 +165,12 @@ $("reveal").onclick=()=>{$("cardAnswer").textContent=current.definition;$("cardA
 $("know").onclick=()=>result(true,"Je kende de definitie.");$("again").onclick=()=>{streak=0;pick()};
 $("reset").onclick=()=>{if(confirm("Weet je zeker dat je alle punten en voortgang wilt wissen?")){state={xp:0,attempts:0,correct:0,seen:{},mastered:{}};save();renderMedals();pick()}};
 renderCategories();renderStats();renderMedals();pick();
-</script></body></html>
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(err => console.log("Service worker:", err));
+  });
+}
+</script>
+</body></html>
