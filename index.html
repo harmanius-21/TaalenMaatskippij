@@ -187,9 +187,9 @@ function closeEnough(a,b){
 function answerVariants(term){
  let variants=[term];
  // Parentheses often contain an accepted synonym, e.g. Taalhouding (taalattitude).
- const parens=[...term.matchAll(/\\(([^)]+)\\)/g)];
+ const parens=[...term.matchAll(/\(([^)]+)\)/g)];
  for(const m of parens) variants.push(m[1]);
- variants=variants.flatMap(v=>v.split(/\\s+\\/\\s+/));
+ variants=variants.flatMap(v=>v.split(/\s+\/\s+/));
  return [...new Set(variants.map(normalize).filter(Boolean))];
 }
 function checkTyped(){
