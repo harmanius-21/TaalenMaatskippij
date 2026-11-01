@@ -1,4 +1,4 @@
-const CACHE_NAME = "taal-maatschappij-trainer-pwa-v11";
+const CACHE_NAME = "taal-maatschappij-trainer-pwa-v12";
 const FILES_TO_CACHE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE)));
