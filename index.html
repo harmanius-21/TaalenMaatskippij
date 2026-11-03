@@ -107,6 +107,38 @@ function relatedTerms(target){
  const candidates=[...explicit,...fallback];
  return shuffle(candidates).slice(0,3);
 }
+function answerDefinition(term){
+ const compact={
+  16:"Een historisch proces dat tot herkenbare verschillen tussen verwante talen leidt.",
+  112:"Een theorie over de invloed van taal op hoe mensen de wereld waarnemen."
+ };
+ if(compact[term.id]) return compact[term.id];
+ let d=String(term.definition||"").replace(/\s+/g," ").trim();
+ d=d.split(/(?:Voorbeeld:|Bijvoorbeeld:|Bijv\.|Een voorbeeld hiervan|Ander voorbeeld)/i)[0].trim();
+ // Vermijd dat opvallende woorden uit het gevraagde begrip letterlijk terugkomen
+ // in de juiste optie. De betekenis blijft staan, maar het woordraadsel verdwijnt.
+ const echoWords=normalize(term.term).split(" ").filter(w=>w.length>=6);
+ for(const w of echoWords){
+   const escaped=w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+   d=d.replace(new RegExp("\\b"+escaped+"\\b","gi"),"");
+ }
+ d=d.replace(/\s+/g," ").replace(/\s+([,.!?;:])/g,"$1").replace(/^[,;:.-]+\s*/,"").trim();
+ const first=(d.match(/^([A-Za-zÀ-ÿ-]+)/)||[])[1]||"";
+ const termWords=normalize(term.term).split(" ");
+ const head=normalize(first);
+ const replacements={"hypothese":"Een theorie","theorie":"Een verklaring","model":"Een beschrijving","proces":"Een ontwikkeling","verschijnsel":"Een situatie","methode":"Een werkwijze"};
+ if(head && termWords.some(w=>w.includes(head)||head.includes(w)) && replacements[head]){
+  d=d.replace(new RegExp("^"+first+"\\b","i"),replacements[head]);
+ }
+ const max=118;
+ if(d.length>max){d=d.slice(0,max-1).replace(/\s+\S*$/,"").replace(/[ ,;:.-]+$/,"")+"…";}
+ return d;
+}
+const CONTEXT_FRAMES={"1": "Bij taalverwantschap en taalgeschiedenis:", "2": "Bij taalverwantschap en taalgeschiedenis:", "3": "Bij taalverwantschap en taalgeschiedenis:", "4": "Bij taalverwantschap en taalgeschiedenis:", "5": "Bij taalverwantschap en taalgeschiedenis:", "6": "Bij taalverwantschap en taalgeschiedenis:", "7": "Bij taalverwantschap en taalgeschiedenis:", "8": "Bij taalverwantschap en taalgeschiedenis:", "9": "Bij taalverwantschap en taalgeschiedenis:", "10": "Bij taalverwantschap en taalgeschiedenis:", "11": "Bij taalverwantschap en taalgeschiedenis:", "12": "Bij taalverwantschap en taalgeschiedenis:", "13": "Bij klanken en historische taalontwikkeling:", "14": "Bij klanken en historische taalontwikkeling:", "15": "Bij klanken en historische taalontwikkeling:", "16": "Bij talen rond de Noordzee:", "17": "Bij klanken en historische taalontwikkeling:", "18": "Bij klanken en historische taalontwikkeling:", "19": "Bij klanken en historische taalontwikkeling:", "20": "Bij klanken en historische taalontwikkeling:", "21": "Bij de ontwikkeling van het Nederlands:", "22": "Bij de ontwikkeling van het Nederlands:", "23": "Bij de ontwikkeling van het Nederlands:", "24": "Bij de ontwikkeling van het Nederlands:", "25": "Bij de ontwikkeling van het Nederlands:", "26": "Bij de ontwikkeling van het Nederlands:", "27": "Bij de ontwikkeling van het Nederlands:", "28": "Bij de ontwikkeling van het Nederlands:", "29": "Bij de ontwikkeling van het Nederlands:", "30": "Bij standaardtaal en taalbeleid:", "31": "Bij standaardtaal en taalbeleid:", "32": "Bij standaardtaal en taalbeleid:", "33": "Bij standaardtaal en taalbeleid:", "34": "Bij standaardtaal en taalbeleid:", "35": "Bij standaardtaal en taalbeleid:", "36": "Bij standaardtaal en taalbeleid:", "37": "Bij standaardtaal en taalbeleid:", "38": "Bij standaardtaal en taalbeleid:", "39": "Bij standaardtaal en taalbeleid:", "40": "Bij de beschrijving en analyse van taal:", "41": "Bij de beschrijving en analyse van taal:", "42": "Bij de beschrijving en analyse van taal:", "43": "Bij de beschrijving en analyse van taal:", "44": "Bij de beschrijving en analyse van taal:", "45": "Bij de beschrijving en analyse van taal:", "46": "Bij de beschrijving en analyse van taal:", "47": "Bij de beschrijving en analyse van taal:", "48": "Bij de beschrijving en analyse van taal:", "49": "Bij de beschrijving en analyse van taal:", "50": "Bij taalvariatie en dialecten:", "51": "Bij taalvariatie en dialecten:", "52": "Bij taalvariatie en dialecten:", "53": "Bij taalvariatie en dialecten:", "54": "Bij taalvariatie en dialecten:", "55": "Bij taalvariatie en dialecten:", "56": "Bij taalvariatie en dialecten:", "57": "Bij taalvariatie en dialecten:", "58": "Bij taalvariatie en dialecten:", "59": "Bij taalvariatie en dialecten:", "60": "Bij taalvariatie en dialecten:", "61": "Bij taalvariatie en dialecten:", "62": "Bij taalvariatie en dialecten:", "63": "Bij taalvariatie en dialecten:", "64": "Bij taalvariatie en dialecten:", "65": "Bij taalvariatie en dialecten:", "66": "Bij taalvariatie en dialecten:", "67": "Bij taalgebruik in sociale situaties:", "68": "Bij taalgebruik in sociale situaties:", "69": "Bij taalgebruik in sociale situaties:", "70": "Bij taalgebruik in sociale situaties:", "71": "Bij taalgebruik in sociale situaties:", "72": "Bij taalgebruik in sociale situaties:", "73": "Bij contact tussen talen:", "74": "Bij contact tussen talen:", "75": "Bij contact tussen talen:", "76": "Bij contact tussen talen:", "77": "Bij contact tussen talen:", "78": "Bij contact tussen talen:", "79": "Bij contact tussen talen:", "80": "Bij contact tussen talen:", "81": "Bij contact tussen talen:", "82": "Bij contact tussen talen:", "83": "Bij contact tussen talen:", "84": "Bij contact tussen talen:", "85": "Bij contact tussen talen:", "86": "Bij contact tussen talen:", "87": "Bij contact tussen talen:", "88": "Bij contact tussen talen:", "89": "Bij contact tussen talen:", "90": "Bij contact tussen talen:", "91": "Bij taalhouding en communicatie:", "92": "Bij taalhouding en communicatie:", "93": "Bij taalhouding en communicatie:", "94": "Bij taalhouding en communicatie:", "95": "Bij taalhouding en communicatie:", "96": "Bij taalhouding en communicatie:", "97": "Bij taalhouding en communicatie:", "98": "Bij taalhouding en communicatie:", "99": "Bij taalhouding en communicatie:", "100": "Bij taalhouding en communicatie:", "101": "Bij taalhouding en communicatie:", "102": "Bij taalhouding en communicatie:", "103": "Bij taalhouding en communicatie:", "104": "Bij taalhouding en communicatie:", "105": "Bij taalhouding en communicatie:", "106": "Bij taalhouding en communicatie:", "107": "Bij taalhouding en communicatie:", "108": "Bij taalhouding en communicatie:", "109": "Bij taalhouding en communicatie:", "110": "Bij taalhouding en communicatie:", "111": "Bij taalhouding en communicatie:", "112": "Bij tweetaligheid en meertaligheid:", "113": "Bij tweetaligheid en meertaligheid:", "114": "Bij tweetaligheid en meertaligheid:", "115": "Bij tweetaligheid en meertaligheid:", "116": "Bij tweetaligheid en meertaligheid:", "117": "Bij tweetaligheid en meertaligheid:", "118": "Bij tweetaligheid en meertaligheid:", "119": "Bij tweetaligheid en meertaligheid:", "120": "Bij tweetaligheid en meertaligheid:", "121": "Bij tweetaligheid en meertaligheid:", "122": "Bij tweetaligheid en meertaligheid:", "123": "Bij tweetaligheid en meertaligheid:", "124": "Bij tweetaligheid en meertaligheid:", "125": "Bij tweetaligheid en meertaligheid:"};
+function contextualizeOptions(options,target){
+ const context=CONTEXT_FRAMES[String(target.id)]||"Binnen dit taalwetenschappelijke onderwerp:";
+ return options.map(o=>({...o,text:context+" "+o.text}));
+}
 function renderQuestion(){
  const mode=$("mode").value;
  $("categoryName").textContent=current.category+(mode==="rtti"?" · toepassing":"");
@@ -118,8 +150,23 @@ function renderQuestion(){
    $("prompt").textContent=mode==="choice"?current.term:current.definition;
   }
   let distractors=relatedTerms(current).slice(0,3);
-  let opts=[{id:current.id,text:mode==="choice"?current.definition:current.term},...distractors.map(t=>({id:t.id,text:mode==="choice"?t.definition:t.term}))];
+  let opts=[{id:current.id,text:mode==="choice"?answerDefinition(current):current.term},...distractors.map(t=>({id:t.id,text:mode==="choice"?answerDefinition(t):t.term}))];
   if(mode==="rtti") opts=[{id:current.id,text:current.term},...distractors.map(t=>({id:t.id,text:t.term}))];
+  // Bij de Noordzee-Germaanse klankverschuiving gebruiken alle vier opties
+  // hetzelfde geografische aanknopingspunt. De inhoudelijke verschillen
+  // testen of de student de specifieke klankontwikkeling herkent.
+  if(mode==="choice" && current.id===16){
+   const northSeaOptions={
+    16:"Een reeks kenmerkende klankontwikkelingen in Germaanse talen rond de Noordzee.",
+    14:"Een algemene verandering in uitspraak die in talen rond de Noordzee kan optreden.",
+    15:"De klankontwikkeling waarmee het Germaans zich onderscheidde van andere Indo-Europese talen, ook in Noordzeetalen.",
+    17:"Een verzamelnaam voor Germaanse taalvariëteiten aan de Noordzeekust, zonder verwijzing naar specifieke klankregels."
+   };
+   opts=opts.map(o=>({...o,text:northSeaOptions[o.id]||o.text}));
+  }
+  if(mode==="choice" && current.id!==16){
+   opts=contextualizeOptions(opts,current);
+  }
   // Ensure unique visible options without relying on their text for correctness.
   const seen=new Set();opts=opts.filter(o=>{const k=o.text.trim().toLowerCase();if(seen.has(k))return false;seen.add(k);return true});
   shuffle(opts).forEach(o=>{let b=document.createElement("button");b.className="answer";b.textContent=o.text;b.dataset.termId=String(o.id);b.onclick=()=>handleChoice(o.id,b);$("choices").append(b)});
