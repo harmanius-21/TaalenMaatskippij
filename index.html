@@ -51,7 +51,7 @@ main{max-width:1100px;margin:22px auto;padding:0 16px 50px}
  <div id="cardArea" class="hidden"><button class="btn primary" id="reveal">Toon antwoord</button><div id="cardAnswer" class="hidden"></div><button class="btn" id="know">Ik wist dit (+5 XP)</button><button class="btn" id="again">Nog eens oefenen</button></div>
  <div class="feedback" id="feedback" role="status"></div><div class="controls" style="margin-top:14px"><button class="btn primary" id="next" disabled>Volgende vraag →</button><span class="muted" id="streak">Reeks: 0</span></div><div id="medals" style="margin-top:12px"></div>
 </section></div>
-<div class="footer">Harm de Jong-produksje © 2026 · v14 · Begrippen en definities gebaseerd op het aangeleverde document · Voortgang wordt lokaal op dit apparaat opgeslagen.</div>
+<div class="footer">Harm de Jong-produksje © 2026 · v15 · Begrippen en definities gebaseerd op het aangeleverde document · Voortgang wordt lokaal op dit apparaat opgeslagen.</div>
 <section class="panel audio-panel" id="luistermateriaal"><h2>🎧 Luistermateriaal</h2><div class="muted">Mevrouw Van der Hoek – Leren voor Taal en Maatschappij</div><audio id="lesAudio" controls preload="none" style="width:100%;margin-top:12px"><source src="./mevrouw-van-der-hoek-leren-taal-en-maatschappij.mp3" type="audio/mpeg"></audio><div id="audioStatus" class="muted" style="margin-top:7px">Druk op afspelen om de opname te starten.</div></section>
 </main>
 <script>
@@ -84,25 +84,28 @@ function renderCategories(){
  CATEGORIES.forEach(c=>{let b=document.createElement("button");b.className="category"+(selected===c?" active":"");b.innerHTML=`<span>${escapeHtml(c)}</span><small>${TERMS.filter(t=>t.category===c).length}</small>`;b.onclick=()=>{selected=c;recentIds=[];renderCategories();pick()};$("categories").append(b)});
  $("allCats").classList.toggle("primary",selected==="ALLE");
 }
+const CONFUSION_GROUPS = {"30":[31,34,35,36,37,38,29,32],"31":[30,34,35,36,37,38,29,32],"34":[30,31,35,36,37,38,29,32],"35":[30,31,34,36,37,38,29,32],"36":[30,31,34,35,37,38,29,32],"37":[30,31,34,35,36,38,29,32],"38":[30,31,34,35,36,37,29,32],"29":[30,31,34,35,36,37,38,32],"32":[30,31,34,35,36,37,38,29],"97":[96,98,99,95,106,105,92],"96":[97,98,99,95,106,105,92],"98":[97,96,99,95,106,105,92],"99":[97,96,98,95,106,105,92],"95":[97,96,98,99,106,105,92],"106":[93,94,92,107,91,65,64],"105":[97,96,98,99,95,106,92],"92":[93,94,107,106,91,65,64],"75":[76,77,74,73,78,79],"76":[75,77,74,73,78,79],"77":[75,76,74,73,78,79],"74":[75,76,77,73,78,79],"73":[75,76,77,74,78,79],"78":[75,76,77,74,73,79],"79":[75,76,77,74,73,78],"43":[44,45,46,47,48,42],"44":[43,45,46,47,48,42],"45":[43,44,46,47,48,42],"46":[43,44,45,47,48,42],"47":[43,44,45,46,48,42],"48":[43,44,45,46,47,42],"42":[43,44,45,46,47,48],"13":[14,15,16,17,20],"14":[13,15,16,17,20],"15":[13,14,16,17,20],"16":[13,14,15,17,20],"17":[13,14,15,16,20],"20":[13,14,15,16,17],"57":[58,54,60,61,62,50,53],"58":[57,54,60,61,62,50,53],"54":[57,58,60,61,62,50,53],"60":[57,58,54,61,62,50,53],"61":[57,58,54,60,62,50,53],"62":[57,58,54,60,61,50,53],"50":[57,58,54,60,61,62,53],"53":[57,58,54,60,61,62,50],"83":[84,85,82,86,87],"84":[83,85,82,86,87],"85":[83,84,82,86,87],"82":[83,84,85,86,87],"86":[83,84,85,82,87],"87":[83,84,85,82,86],"113":[114,115,116,117,118,119,121],"114":[113,115,116,117,118,119,121],"115":[113,114,116,117,118,119,121],"116":[113,114,115,117,118,119,121],"117":[113,114,115,116,118,119,121],"118":[113,114,115,116,117,119,121],"119":[113,114,115,116,117,118,121],"121":[113,114,115,116,117,118,119],"93":[94,92,107,106,91,65,64],"94":[93,92,107,106,91,65,64],"107":[93,94,92,106,91,65,64],"91":[93,94,92,107,106,65,64],"65":[93,94,92,107,106,91,64],"64":[93,94,92,107,106,91,65],"100":[101,108,109,110],"101":[100,108,109,110],"108":[100,101,109,110],"109":[100,101,108,110],"110":[100,101,108,109],"40":[41,19,21,22,23,24,25],"41":[40,19,21,22,23,24,25],"19":[40,41,21,22,23,24,25],"21":[40,41,19,22,23,24,25],"22":[40,41,19,21,23,24,25],"23":[40,41,19,21,22,24,25],"24":[40,41,19,21,22,23,25],"25":[40,41,19,21,22,23,24],"70":[69,71,72,111,103,102],"69":[70,71,72,111,103,102],"71":[70,69,72,111,103,102],"72":[70,69,71,111,103,102],"111":[70,69,71,72,103,102],"103":[70,69,71,72,111,102],"102":[70,69,71,72,111,103]};
 function relatedTerms(target){
- // Kies afleiders uit hetzelfde inhoudelijke domein. Rangschik ze op
- // overeenkomst in begrippen en definities, zodat de opties inhoudelijk
- // verwant zijn in plaats van willekeurige, overduidelijk foute definities.
+ // Eerste keuze: bewust samengestelde verwarringsgroepen met begrippen
+ // die inhoudelijk dicht bij elkaar liggen en vaak door elkaar worden gehaald.
+ const explicit=(CONFUSION_GROUPS[String(target.id)]||[])
+   .map(id=>TERMS.find(t=>t.id===id)).filter(Boolean);
  const stop=new Set(["de","het","een","en","van","in","op","aan","met","voor","door","naar","dat","die","is","zijn","wordt","worden","kan","kunnen","als","of","bij","uit","om","te","niet","meer","ook","waarbij","tussen","zich","er","hetzelfde","andere","iemand","taal","taalgebruik"]);
  const tokens=x=>normalize(x).split(" ").filter(w=>w.length>3&&!stop.has(w));
  const a=new Set(tokens(target.term+" "+target.definition+" "+target.example));
- const scored=pool().filter(t=>t.id!==target.id).map(t=>{
-   const b=new Set(tokens(t.term+" "+t.definition+" "+t.example));
-   let overlap=0;for(const w of a)if(b.has(w))overlap++;
-   const union=new Set([...a,...b]).size||1;
-   const jaccard=overlap/union;
-   const shared=overlap/Math.max(1,Math.min(a.size,b.size));
-   return {term:t,score:jaccard*0.65+shared*0.35};
- }).sort((x,y)=>y.score-x.score);
- // Neem vooral verwante begrippen uit dezelfde categorie. Kleine variatie
- // binnen de beste kandidaten voorkomt dat de quiz steeds dezelfde opties toont.
- const top=scored.slice(0,Math.min(9,scored.length));
- return shuffle(top).slice(0,3).map(x=>x.term);
+ const score=t=>{
+  const b=new Set(tokens(t.term+" "+t.definition+" "+t.example));
+  let overlap=0;for(const w of a)if(b.has(w))overlap++;
+  const union=new Set([...a,...b]).size||1;
+  return overlap/union*0.65+overlap/Math.max(1,Math.min(a.size,b.size))*0.35;
+ };
+ // Als een begripscluster nog geen drie bruikbare afleiders heeft,
+ // vul dan uitsluitend aan met begrippen uit dezelfde categorie.
+ const used=new Set(explicit.map(t=>t.id));
+ const fallback=TERMS.filter(t=>t.id!==target.id && t.category===target.category && !used.has(t.id))
+   .map(t=>({term:t,score:score(t)})).sort((a,b)=>b.score-a.score).map(x=>x.term);
+ const candidates=[...explicit,...fallback];
+ return shuffle(candidates).slice(0,3);
 }
 function renderQuestion(){
  const mode=$("mode").value;
@@ -182,10 +185,45 @@ $("know").onclick=()=>finish(true,"Je kende de definitie.");$("again").onclick=(
 $("reset").onclick=()=>{if(confirm("Weet je zeker dat je alle punten en voortgang wilt wissen?")){state={xp:0,attempts:0,correct:0,seen:{},mastered:{},recentIds:[]};recentIds=[];save();renderMedals();pick()}};
 $("toggleGlossary").onclick=()=>{$("glossary").classList.toggle("hidden");if(!$("glossary").classList.contains("hidden")){renderGlossary();$("glossarySearch").focus()}};
 $("closeGlossary").onclick=()=>$("glossary").classList.add("hidden");$("glossarySearch").addEventListener("input",renderGlossary);
-renderCategories();renderStats();renderMedals();pick();
+function startTrainer(){
+ try{
+  // Forceer een geldige startmodus voordat de eerste vraag wordt opgebouwd.
+  const modeSelect=$("mode");
+  if(modeSelect && !modeSelect.value) modeSelect.value="choice";
+  renderCategories();renderStats();renderMedals();pick();
+  if(!current || !$("prompt").textContent || $("prompt").textContent==="Klaar om te beginnen?"){
+   throw new Error("De eerste vraag is niet opgebouwd.");
+  }
+ }catch(err){
+  console.error("Trainer-startfout:",err);
+  $("prompt").textContent="De eerste vraag wordt opnieuw geladen…";
+  // Herstel eenmalig na de eerste DOM-/opslaginitialisatie.
+  setTimeout(()=>{try{
+   if(!$("mode").value)$("mode").value="choice";
+   renderCategories();renderStats();renderMedals();pick();
+  }catch(retryErr){console.error("Trainer-herstel mislukt:",retryErr);$("prompt").textContent="Starten lukt niet. Vernieuw de pagina nog één keer."; }},150);
+ }
+}
+if(document.readyState==="loading"){
+ document.addEventListener("DOMContentLoaded",startTrainer,{once:true});
+}else{
+ startTrainer();
+}
 </script>
 <script>
-if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(e=>console.log("Service worker",e)))}
+if("serviceWorker" in navigator){
+ window.addEventListener("load",()=>{
+  navigator.serviceWorker.register("./sw.js").then(reg=>{
+   if(reg.waiting) reg.waiting.postMessage({type:"SKIP_WAITING"});
+   reg.addEventListener("updatefound",()=>{
+    const worker=reg.installing;
+    if(worker) worker.addEventListener("statechange",()=>{
+     if(worker.state==="installed" && navigator.serviceWorker.controller) worker.postMessage({type:"SKIP_WAITING"});
+    });
+   });
+  }).catch(e=>console.log("Service worker",e));
+ });
+}
 (() => {
  const button=document.getElementById("installApp");if(!button)return;let installPrompt=null;
  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);

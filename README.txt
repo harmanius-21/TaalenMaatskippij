@@ -1,2 +1,5 @@
 
 7. Pittige meerkeuze: afleiders worden gekozen uit dezelfde categorie en gerangschikt op inhoudelijke overeenkomst tussen begrippen, definities en voorbeelden. Daardoor zijn de antwoorden veel minder willekeurig en liggen ze inhoudelijk dichter bij elkaar.
+
+8. Versie 15 gebruikt samengestelde verwarringsgroepen: de afleiders komen eerst uit begrippen die inhoudelijk sterk op elkaar lijken (bijv. CAT/accommodatie/convergentie/divergentie en standaard-Nederlands/standaardtaal/standaardisering). Alleen als aanvulling worden begrippen uit dezelfde categorie gebruikt; nooit willekeurige definities uit een ander vakgebied.
+\n9. Versie 16 voorkomt een extra weggevertje: als de juiste definitie begint met het soortnaamwoord dat al in het gevraagde begrip staat (bijv. ‘hypothese’ bij Sapir-Whorfhypothese), wordt de antwoordoptie neutraal geherformuleerd (‘Een theorie…’). De oorspronkelijke definitie blijft ongewijzigd in de begrippenlijst.\n
