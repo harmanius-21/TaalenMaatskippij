@@ -107,6 +107,139 @@ function relatedTerms(target){
  const candidates=[...explicit,...fallback];
  return shuffle(candidates).slice(0,3);
 }
+function questionDefinition(term){
+ // De omschrijving mag het gezochte begrip zelf nooit prijsgeven.
+ // De woordenlijst blijft ongewijzigd; dit is alleen de vraagweergave.
+ const cleanPrompts={
+  1:"Een groep talen die aantoonbaar gemeenschappelijke taalkundige kenmerken en een historische oorsprong delen.",
+  2:"De historische of structurele band tussen talen die overeenkomsten door een gemeenschappelijke oorsprong verklaart.",
+  3:"Een schema dat laat zien hoe talen zich uit oudere gemeenschappelijke talen hebben vertakt.",
+  4:"Een niet rechtstreeks overgeleverde voorouderlijke taal die taalkundigen op basis van overeenkomsten reconstrueren.",
+  5:"De veronderstelde voorouder van onder meer de Indo-Europese talen, waaronder veel talen uit Europa en delen van Azië.",
+  6:"Een taalgroep waartoe onder andere Frans en Italiaans behoren; deze talen stammen af van het Latijn.",
+  7:"Een taalgroep waartoe onder andere Russisch en Pools behoren.",
+  8:"De historische taalgroep waartoe onder andere Nederlands, Engels en Duits behoren.",
+  9:"De tak van de Germaanse talen waartoe onder andere Nederlands, Fries, Engels en Duits worden gerekend.",
+  10:"De uitgestorven tak van de Germaanse talen waarvan het Gotisch de bekendste overgeleverde taal is.",
+  11:"De tak van de Germaanse talen waartoe onder andere Deens, Zweeds, Noors en IJslands behoren.",
+  12:"De West-Germaanse taal die vooral in de provincie Fryslân wordt gesproken.",
+  13:"Een regelmatige klankovereenkomst die helpt om historische relaties tussen talen vast te stellen.",
+  14:"Een historische verandering waarbij de uitspraak van klanken volgens bepaalde patronen verandert.",
+  15:"Een reeks systematische klankveranderingen waardoor de Germaanse talen zich op klankgebied onderscheiden van andere Indo-Europese talen; bijvoorbeeld Latijnse p tegenover Germaanse f.",
+  16:"Een reeks klankontwikkelingen die kenmerkend is voor talen rond de Noordzee; vergelijk bijvoorbeeld kerk, tsjerke en church.",
+  17:"Een andere benaming voor de Germaanse taalvariantengroep rond de Noordzee.",
+  18:"Een grammaticale vorm die aangeeft welke functie een woord heeft of welke verhouding het tot andere woorden in de zin heeft.",
+  19:"Het vakgebied dat onderzoekt hoe talen door de eeuwen heen veranderen en hoe oudere taalstadia kunnen worden gereconstrueerd.",
+  20:"Het onderzoek naar de herkomst en historische ontwikkeling van woorden.",
+  21:"De oudste bekende periode van het Nederlands, tot ongeveer 1200, met onder meer naamvallen en éénledige ontkenning.",
+  22:"De Nederlandse taalperiode tussen ongeveer 1200 en 1500, waarin onder meer naamvallen afnamen en klinkers verzwakten.",
+  23:"De Nederlandse periode van de zestiende en zeventiende eeuw, tussen de middeleeuwse taalvormen en het latere Nederlands.",
+  24:"De benaming voor het Nederlands vanaf de zeventiende eeuw, na de vroegere historische taalstadia.",
+  25:"De hedendaagse, meest recente fase in de ontwikkeling van het Nederlands.",
+  26:"Groepen amateurdichters en voordrachtkunstenaars die zich vanaf de late middeleeuwen organiseerden en bewust aan de Nederlandse taal werkten.",
+  27:"Een kring van schrijvers en geleerden die in de zeventiende eeuw geregeld bijeenkwam op het Muiderslot, onder wie Hooft, Huygens en Vondel.",
+  28:"De in 1637 verschenen Nederlandse vertaling van de Bijbel die rechtstreeks uit het Hebreeuws en Grieks werd gemaakt.",
+  29:"De vroegere benaming voor de algemene normtaal, die later plaatsmaakte voor een neutralere naam.",
+  30:"De bovenregionale vorm van het Nederlands die als gemeenschappelijke algemene taal in het Nederlandse taalgebied functioneert.",
+  31:"Een taalvariant die binnen een taalgemeenschap als voorkeursvorm geldt en veel wordt gebruikt door media, overheid en auteurs.",
+  32:"Een gemeenschappelijke taal die mensen met verschillende moedertalen gebruiken om met elkaar te communiceren, bijvoorbeeld bij handel.",
+  33:"De verspreiding van kenmerken uit het Hollands naar andere Nederlandse dialecten.",
+  34:"Het proces waarbij een gemeenschappelijke normtaal wordt gevormd en vastgelegd.",
+  35:"De keuze welke dialectvormen als basis dienen voor de toekomstige gemeenschappelijke norm.",
+  36:"Het vastleggen van gekozen taalvormen in regels, spellingafspraken en woordenboeken, zodat duidelijk is wat de norm is.",
+  37:"Het uitbreiden van de gebruiksmogelijkheden van een normtaal naar nieuwe vakgebieden en maatschappelijke domeinen.",
+  38:"Het proces waarbij taalvormen door de taalgemeenschap als aanvaard worden beschouwd.",
+  39:"De taalkundige die een bekend model met verschillende fasen in de vorming van een normtaal beschreef.",
+  40:"Het bestuderen van een taal zoals die op één bepaald moment functioneert, zonder de historische ontwikkeling centraal te stellen.",
+  41:"Het onderzoeken van taalverandering door verschillende perioden met elkaar te vergelijken.",
+  42:"De verschillende onderdelen of invalshoeken waarmee taalkundigen een taal als systeem onderzoeken.",
+  43:"Het onderdeel van de taalkunde dat onderzoekt welke klanken in een taal betekenisonderscheid kunnen maken en hoe ze functioneren.",
+  44:"Het onderdeel van de taalkunde dat onderzoekt hoe woorden uit kleinere betekenisvolle delen worden opgebouwd.",
+  45:"Het onderdeel van de taalkunde dat zich bezighoudt met betekenis van woorden en uitdrukkingen.",
+  46:"Het onderdeel van de taalkunde dat onderzoekt hoe woorden volgens grammaticale regels tot zinnen worden gecombineerd.",
+  47:"Het vakgebied dat de woordenschat van een taal en de woorden daarin bestudeert.",
+  48:"Het onderdeel van de taalkunde dat onderzoekt hoe betekenis en taalgebruik afhangen van de concrete situatie en context.",
+  49:"Veranderingen in de manier waarop taaluitingen in verschillende situaties en sociale contexten worden gebruikt.",
+  50:"Een neutrale aanduiding voor een vorm van taalgebruik, zonder die meteen als aparte taal, streekvorm of stijl te bestempelen.",
+  51:"Het vormen van het idee dat een staat of natie behoefte heeft aan één gemeenschappelijke taalvorm.",
+  52:"De aanwezigheid van meerdere verschillende vormen of kenmerken binnen een taal of taalgebied.",
+  53:"Het trekken van grenzen tussen taalgebieden of tussen verschillende taalvormen.",
+  54:"Een gebied waarin naburige dialecten geleidelijk in elkaar overgaan en kenmerken van beide kanten voorkomen.",
+  55:"Het overdreven of verkeerd toepassen van dialectkenmerken doordat sprekers dialectregels door elkaar halen.",
+  56:"Een taalvorm die iemand gebruikt in een poging extra correct of netjes te spreken, maar daarbij juist een fout maakt.",
+  57:"Een denkbeeldige lijn op een kaart die gebieden scheidt waar een bepaald taalverschijnsel verschillend voorkomt.",
+  58:"Een bundel van meerdere taalgrenzen die ongeveer hetzelfde gebied afbakenen en samen een dialectgrens zichtbaar maken.",
+  59:"De uitspraakkenmerken waarmee iemands manier van spreken herkenbaar is, zoals klankvorming en uitspraak.",
+  60:"Een geografisch gebonden taalvorm binnen een grotere taal, zoals Wâldfrysk of Klaaifrysk.",
+  61:"Een taalvorm die kenmerkend is voor een bepaalde regio en vaak tussen lokale dialecten en de algemene taal in staat.",
+  62:"Een regionale taalvariant die kenmerken van een bepaalde streek vertoont.",
+  63:"Een taalvariant die samenhangt met de etnische of culturele achtergrond van de sprekers.",
+  64:"De persoonlijke manier van spreken en taalgebruiken die kenmerkend is voor één individu.",
+  65:"Een taalvariant die samenhangt met de sociale groep of maatschappelijke laag waartoe sprekers behoren.",
+  66:"Een taalvariant die in verband wordt gebracht met gender en verschillen in taalgebruik tussen gendergroepen.",
+  67:"Het vakgebied dat onderzoekt hoe taal en taalgebruik samenhangen met sociale groepen, cultuur en maatschappij.",
+  68:"Een verklaring voor taalverandering waarbij vernieuwingen zich als rimpels over naburige gebieden verspreiden door contact tussen sprekers.",
+  69:"Verschillen in taalgebruik die samenhangen met de situatie, het doel of de norm die een spreker kiest.",
+  70:"Een vorm van taalgebruik die past bij een bepaalde situatie, omgeving of communicatieve taak.",
+  71:"Taalgebruik dat varieert van zakelijk en afstandelijk tot los en vertrouwd, afhankelijk van de gesprekspartner en situatie.",
+  72:"Een taalvorm met woorden en uitdrukkingen die vooral populair zijn onder jongeren.",
+  73:"Het verschijnsel dat uitspraak, woordenschat of grammatica van talen in de loop van de tijd verschuift.",
+  74:"Het ontstaan van een nieuwe taal uit bestaande taalvormen of door langdurig taalcontact.",
+  75:"De situatie waarin een taal niet langer door een gemeenschap wordt gebruikt en niet meer wordt doorgegeven.",
+  76:"Een proces waarbij een taal haar eigen woordenschat grotendeels verliest doordat woorden van een andere taal ervoor in de plaats komen, waarna de talen naar elkaar toegroeien.",
+  77:"Het geleidelijk kwijtraken van woorden, grammaticale kennis of andere onderdelen van een taal door een individuele spreker of groep.",
+  78:"Een vereenvoudigd communicatiesysteem dat ontstaat wanneer groepen zonder gemeenschappelijke taal met elkaar moeten communiceren.",
+  79:"Een taal die ontstaat wanneer een eerder contacttaalsysteem als moedertaal door een nieuwe generatie wordt verworven.",
+  80:"Verandering die bewust wordt nagestreefd of vooral wordt ingezet door sprekers met een hoge maatschappelijke status.",
+  81:"Verandering die doorgaans onbewust ontstaat en vooral wordt verspreid door sprekers met een lagere maatschappelijke status.",
+  82:"Het overnemen van woorden, constructies of andere taalelementen uit een andere taal.",
+  83:"Een overgenomen woord uit een andere taal dat in het eigen taalgebruik wordt gebruikt.",
+  84:"Een uit een andere taal overgenomen woordgroep of zinsconstructie.",
+  85:"Een uitdrukking waarvan de afzonderlijke onderdelen uit een andere taal zijn vertaald, waardoor de oorspronkelijke structuur herkenbaar blijft.",
+  86:"Een overgenomen woord of uitdrukking die als onnodig of ongewenst wordt gezien omdat er een goed eigen-taalalternatief bestaat.",
+  87:"Het eenvoudiger maken van grammaticale regels of structuren, bijvoorbeeld minder verbuigingen of vervoegingen.",
+  88:"De invloed die de wens om bij een groep te horen uitoefent op de manier waarop mensen spreken en taalvormen overnemen.",
+  89:"Een patroon waarbij een taalverandering eerst langzaam op gang komt, daarna snel wordt overgenomen en ten slotte weer afvlakt.",
+  90:"Een uitspraakvariant van het Nederlands waarbij de tweeklank in woorden als ‘tijd’ en ‘prijs’ meer als ‘ai’ klinkt.",
+  91:"Een taalvariant die vaak samenhangt met leeftijd, sociale achtergrond, etniciteit en groepsidentiteit, en bijvoorbeeld op school of straat wordt gebruikt.",
+  92:"De opvattingen en gevoelens die mensen hebben over talen, accenten, dialecten en manieren van spreken.",
+  93:"Een uitgesproken of bewust verwoorde mening over taalgebruik, die bijvoorbeeld op stereotypen kan berusten.",
+  94:"Een automatische of niet direct uitgesproken waardering van taalvormen die het gedrag wel kan beïnvloeden.",
+  95:"Wat iemand daadwerkelijk doet met taal, bijvoorbeeld welke woorden, uitspraak of stijl diegene kiest.",
+  96:"Het aanpassen van je manier van communiceren aan je gesprekspartner, bijvoorbeeld in woordkeus, tempo of lichaamstaal.",
+  97:"Een theorie die verklaart hoe mensen hun communicatie aanpassen door meer op de ander te gaan lijken of juist afstand te nemen.",
+  98:"Het aanpassen van je communicatie zodat die meer gaat lijken op die van je gesprekspartner.",
+  99:"Het aanpassen van je communicatie om juist verschil of sociale afstand met je gesprekspartner te benadrukken.",
+  100:"Een verzachtende formulering die een gevoelig, pijnlijk of onaangenaam onderwerp minder direct benoemt.",
+  101:"Een bewust hardere of grovere formulering waarmee iets onaangenamer of kwetsender wordt uitgedrukt.",
+  102:"Communicatie via middelen anders dan woorden, zoals gebaren, gezichtsuitdrukkingen en lichaamshouding.",
+  103:"De melodische en ritmische kenmerken van spraak, zoals intonatie, klemtoon, tempo en volume.",
+  104:"Een streven om woorden of taalvormen uit andere talen te vermijden en daarvoor eigen-taalvormen te gebruiken.",
+  105:"Het bewust kiezen van taalvormen die sterk verschillen van die van een andere, concurrerende taal.",
+  106:"Het beeld van jezelf of de groep waartoe je behoort dat je mede uitdrukt met je taalkeuzes.",
+  107:"De mate van aanzien of waardering die iemand in de ogen van anderen heeft.",
+  108:"Een vorm van beleefdheid waarbij je de vrijheid, privacy en zelfstandigheid van de ander respecteert en diens handelingsruimte niet onnodig beperkt.",
+  109:"Het verlangen van een gesprekspartner om vrij te kunnen handelen en niet ongevraagd te worden beperkt of gestoord.",
+  110:"Een vorm van beleefdheid waarbij je verbondenheid, waardering en sympathie voor de ander laat blijken.",
+  111:"Verschillen in hoe taalgebruikers hetzelfde communicatieve doel bereiken of interpreteren, afhankelijk van culturele of sociale gewoonten.",
+  112:"De gedachte dat de taal die mensen spreken invloed heeft op hoe zij de wereld waarnemen, indelen en begrijpen.",
+  113:"Een tweetalige gemeenschap waarin de twee talen elk een vaste functie hebben, bijvoorbeeld één voor formele situaties en één voor thuis.",
+  114:"De situatie waarin één persoon twee talen beheerst of gebruikt.",
+  115:"De situatie waarin één persoon of gemeenschap meer dan twee talen beheerst of gebruikt.",
+  116:"Meerdere talen gebruiken door een individu, tegenover het naast elkaar bestaan van meerdere talen in een samenleving of gebied.",
+  117:"Een vorm van tweetaligheid waarbij beide talen eigen begrippen en betekenisnetwerken hebben; een woord in de ene taal hoeft niet precies hetzelfde concept op te roepen als het woord in de andere.",
+  118:"Een vorm van tweetaligheid waarbij iemand een woord in de ene taal eerst via de andere taal moet omzetten om bij de betekenis te komen.",
+  119:"Een vorm van tweetaligheid waarbij woorden uit twee talen rechtstreeks naar hetzelfde onderliggende begrip verwijzen.",
+  120:"Onderwijs waarbij twee talen worden gebruikt als taal waarin les wordt gegeven.",
+  121:"Het overschakelen van de ene taal of taalcode naar een andere binnen één gesprek of communicatieve situatie.",
+  122:"Een taal die binnen de grenzen van een staat wordt gesproken door een kleinere groep dan de dominante taalgroep en als zodanig onder bepaalde voorwaarden wordt erkend.",
+  123:"Een taal die binnen de grenzen van een staat door de grootste of dominante taalgroep wordt gesproken.",
+  124:"Talen die door mensen of families vanuit een ander land of gebied naar een nieuwe samenleving zijn meegenomen.",
+  125:"Talen die al van oudsher in een gebied worden gesproken door groepen die daar als oorspronkelijke taalgemeenschap aanwezig zijn."
+ };
+ if(cleanPrompts[term.id]) return cleanPrompts[term.id];
+ return String(term.definition||"").replace(/\s+/g," ").trim();
+}
 function answerDefinition(term){
  const compact={
   16:"Een historisch proces dat tot herkenbare verschillen tussen verwante talen leidt.",
@@ -147,7 +280,7 @@ function renderQuestion(){
   if(mode==="rtti"){
    $("prompt").textContent="Welk begrip past bij dit voorbeeld? "+current.example;
   } else {
-   $("prompt").textContent=mode==="choice"?current.term:current.definition;
+   $("prompt").textContent=mode==="choice"?current.term:questionDefinition(current);
   }
   let distractors=relatedTerms(current).slice(0,3);
   let opts=[{id:current.id,text:mode==="choice"?answerDefinition(current):current.term},...distractors.map(t=>({id:t.id,text:mode==="choice"?answerDefinition(t):t.term}))];
@@ -170,9 +303,9 @@ function renderQuestion(){
   // Ensure unique visible options without relying on their text for correctness.
   const seen=new Set();opts=opts.filter(o=>{const k=o.text.trim().toLowerCase();if(seen.has(k))return false;seen.add(k);return true});
   shuffle(opts).forEach(o=>{let b=document.createElement("button");b.className="answer";b.textContent=o.text;b.dataset.termId=String(o.id);b.onclick=()=>handleChoice(o.id,b);$("choices").append(b)});
-  if(opts.length<4){$("prompt").textContent=mode==="choice"?current.term:current.definition;}
+  if(opts.length<4){$("prompt").textContent=mode==="choice"?current.term:questionDefinition(current);}
  }else if(mode==="type"){
-  $("prompt").textContent=current.definition;$("typingArea").classList.remove("hidden");
+  $("prompt").textContent=questionDefinition(current);$("typingArea").classList.remove("hidden");
  }else{
   $("prompt").textContent=current.term;$("cardArea").classList.remove("hidden");
  }
