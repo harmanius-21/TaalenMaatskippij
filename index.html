@@ -40,7 +40,7 @@ main{max-width:1100px;margin:22px auto;padding:0 16px 50px}
 <aside class="side panel"><h2>Kies een categorie</h2><div class="categories" id="categories"></div><p class="muted">Je kunt ook alle categorieën door elkaar oefenen.</p><button class="btn" style="width:100%" id="allCats">Alle begrippen</button></aside>
 <section class="panel mainpanel">
  <div class="controls">
-  <select id="mode" aria-label="Oefenvorm"><option value="choice">Meerkeuze: begrip → definitie</option><option value="reverse">Meerkeuze: definitie → begrip</option><option value="type">Zelf typen</option><option value="cards">Leerkaarten</option><option value="rtti">Toepassingsvragen</option></select>
+  <select id="mode" aria-label="Oefenvorm"><option value="choice">Pittige meerkeuze: begrip → definitie</option><option value="reverse">Meerkeuze: definitie → begrip</option><option value="type">Zelf typen</option><option value="cards">Leerkaarten</option><option value="rtti">Toepassingsvragen</option></select>
   <button class="btn" id="shuffle">Andere vraag</button><button class="btn" id="toggleGlossary">Begrippenlijst bekijken</button><button class="btn" id="reset">Voortgang wissen</button>
  </div>
  <section id="glossary" class="glossary hidden"><div class="controls" style="justify-content:space-between"><h2 style="margin:0">Begrippenlijst</h2><button class="btn" id="closeGlossary">Sluiten ✕</button></div><input id="glossarySearch" class="typing" type="search" placeholder="Zoek een begrip, uitleg of categorie..."><div class="muted" id="glossaryCount"></div><div id="glossaryList" class="glossary-list"></div></section>
@@ -51,7 +51,7 @@ main{max-width:1100px;margin:22px auto;padding:0 16px 50px}
  <div id="cardArea" class="hidden"><button class="btn primary" id="reveal">Toon antwoord</button><div id="cardAnswer" class="hidden"></div><button class="btn" id="know">Ik wist dit (+5 XP)</button><button class="btn" id="again">Nog eens oefenen</button></div>
  <div class="feedback" id="feedback" role="status"></div><div class="controls" style="margin-top:14px"><button class="btn primary" id="next" disabled>Volgende vraag →</button><span class="muted" id="streak">Reeks: 0</span></div><div id="medals" style="margin-top:12px"></div>
 </section></div>
-<div class="footer">Harm de Jong-produksje © 2026 · Begrippen en definities gebaseerd op het aangeleverde document · Voortgang wordt lokaal op dit apparaat opgeslagen.</div>
+<div class="footer">Harm de Jong-produksje © 2026 · v14 · Begrippen en definities gebaseerd op het aangeleverde document · Voortgang wordt lokaal op dit apparaat opgeslagen.</div>
 <section class="panel audio-panel" id="luistermateriaal"><h2>🎧 Luistermateriaal</h2><div class="muted">Mevrouw Van der Hoek – Leren voor Taal en Maatschappij</div><audio id="lesAudio" controls preload="none" style="width:100%;margin-top:12px"><source src="./mevrouw-van-der-hoek-leren-taal-en-maatschappij.mp3" type="audio/mpeg"></audio><div id="audioStatus" class="muted" style="margin-top:7px">Druk op afspelen om de opname te starten.</div></section>
 </main>
 <script>
@@ -85,9 +85,24 @@ function renderCategories(){
  $("allCats").classList.toggle("primary",selected==="ALLE");
 }
 function relatedTerms(target){
- return shuffle(pool().filter(t=>t.id!==target.id && t.category===target.category)
-   .concat(TERMS.filter(t=>t.id!==target.id && t.category!==target.category)))
-   .filter((t,i,a)=>a.findIndex(x=>x.id===t.id)===i);
+ // Kies afleiders uit hetzelfde inhoudelijke domein. Rangschik ze op
+ // overeenkomst in begrippen en definities, zodat de opties inhoudelijk
+ // verwant zijn in plaats van willekeurige, overduidelijk foute definities.
+ const stop=new Set(["de","het","een","en","van","in","op","aan","met","voor","door","naar","dat","die","is","zijn","wordt","worden","kan","kunnen","als","of","bij","uit","om","te","niet","meer","ook","waarbij","tussen","zich","er","hetzelfde","andere","iemand","taal","taalgebruik"]);
+ const tokens=x=>normalize(x).split(" ").filter(w=>w.length>3&&!stop.has(w));
+ const a=new Set(tokens(target.term+" "+target.definition+" "+target.example));
+ const scored=pool().filter(t=>t.id!==target.id).map(t=>{
+   const b=new Set(tokens(t.term+" "+t.definition+" "+t.example));
+   let overlap=0;for(const w of a)if(b.has(w))overlap++;
+   const union=new Set([...a,...b]).size||1;
+   const jaccard=overlap/union;
+   const shared=overlap/Math.max(1,Math.min(a.size,b.size));
+   return {term:t,score:jaccard*0.65+shared*0.35};
+ }).sort((x,y)=>y.score-x.score);
+ // Neem vooral verwante begrippen uit dezelfde categorie. Kleine variatie
+ // binnen de beste kandidaten voorkomt dat de quiz steeds dezelfde opties toont.
+ const top=scored.slice(0,Math.min(9,scored.length));
+ return shuffle(top).slice(0,3).map(x=>x.term);
 }
 function renderQuestion(){
  const mode=$("mode").value;
