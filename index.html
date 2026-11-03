@@ -90,9 +90,9 @@ function relatedTerms(target){
    .filter((t,i,a)=>a.findIndex(x=>x.id===t.id)===i);
 }
 function renderQuestion(){
+ const mode=$("mode").value;
  $("categoryName").textContent=current.category+(mode==="rtti"?" · toepassing":"");
  $("counter").textContent=`Begrip ${current.id} · ${pool().length} in deze selectie`;
- const mode=$("mode").value;
  if(mode==="choice"||mode==="reverse"||mode==="rtti"){
   if(mode==="rtti"){
    $("prompt").textContent="Welk begrip past bij dit voorbeeld? "+current.example;
